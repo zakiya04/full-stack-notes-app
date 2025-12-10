@@ -3,9 +3,9 @@ import './App.css'
 function App() {
 
   return (
-  <>
-  noteo
-  </>
+  
+  <div className='bg-black h-screen'></div>
+  
   )
 }
 
