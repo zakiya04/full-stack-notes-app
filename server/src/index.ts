@@ -9,7 +9,7 @@ const pool:Pool = new Pool({
     port:5432,
     database:'noteo'
 })
-const server = http.createServer((req:IncomingMessage,res:ServerResponse)=>{
+const server = http.createServer(async (req:IncomingMessage,res:ServerResponse)=>{
 
 //what things i want from the browser
 
@@ -29,19 +29,26 @@ const method = req.method ?? "";
 // what will i give to requests 
 
 if(method == 'GET'){
+    let data = await pool.query('SELECT * FROM notes;')
     res.writeHead(200, {"Content-type":"application/json"});
-    res.end(JSON.stringify({message:"done!"}));
+    res.end(JSON.stringify(data.rows));
 }
 else if (method == 'POST'){
     let body ="";
-    res.on('data',(chunks:Buffer)=>{
+    req.on('error',err => console.error(err));
+    req.on('data',(chunks:Buffer)=>{
        body += chunks.toString()
-    })
-    req.on('end',()=>{
+    });
+    req.on('end',async()=>{
         try{
-            const parse = JSON.parse(body)
+            const parse = JSON.parse(body);
+            
+            const query= `INSERT INTO note (title,body,pinned) VALUES($1,$2,$3) RETURNING *`
+            const values = [parse.title,parse.body,parse.pinned];
+            const result = await pool.query(query,values)
+
             res.writeHead(200,{"Content-type":"appliccation/json"});
-            res.end(JSON.stringify({message:parse}))
+            res.end(JSON.stringify(result.rows[0]))
         }
         catch{
             res.writeHead(400,{"Content-type":"application/json"});
@@ -49,8 +56,7 @@ else if (method == 'POST'){
         }
     })
 }
-
-})
+});
 
 
 server.listen(5000,()=>{
