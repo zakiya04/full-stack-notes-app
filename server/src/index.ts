@@ -56,6 +56,33 @@ else if (method == 'POST'){
         }
     })
 }
+else if (req.method == "DELETE"){
+    let body = "";
+    req.on('data',(chunk)=>{
+        body += chunk
+    });
+    req.on('end',async ()=>{
+        const {id} = JSON.parse(body);
+        
+        try{
+           const note = await pool.query(`SELECT * FROM note WHERE id = $1`,[id]);
+
+        if (note.rowCount === 0){
+            res.writeHead(404,{"Content-Type":"application/json"});
+            res.end(JSON.stringify({error:'Notes Not Found'}))
+        }
+        await pool.query(`delete from note where id = $1 `,[id]);
+        const updated = await pool.query(`select * from note`);
+
+        res.writeHead(200,{"Content-Type":"application/json"});
+        res.end(JSON.stringify(updated.rows));
+        }
+       catch{
+        res.writeHead(404,{"Content-Type":"application/json"});
+        res.end(JSON.stringify({error:"Could'nt get note"}))
+       }
+    })
+}
 });
 
 
