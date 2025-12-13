@@ -1,5 +1,6 @@
 import Note from './note';
 import { useState , useEffect} from 'react';
+import Button from "./topBtn"
 
 interface noteType{
   id: number,
@@ -7,7 +8,7 @@ interface noteType{
   content:string,
 }
 
-const notes = () => {
+const Notes = () => {
   const [notes,setNotes] = useState<noteType[]>([]);
   const [newNote,setnewNote] = useState('');
   
@@ -34,7 +35,7 @@ const notes = () => {
      const res = await fetch("http://localhost:5000",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body: JSON.stringify(newNote)
+      body: JSON.stringify({content:newNote})
      });
 
      if(res.ok){
@@ -69,12 +70,15 @@ const notes = () => {
   }
 
   return (
+    <>
+    <Button handleClick={addNotes}/>
     <div className='gird grid-cols-3 gap-4 mx-4 my-6 '>
       {notes.map(note =>(
         <Note key={note.id} deleteHandler={()=> deleteNote(note.id)}/>
       ))}
     </div>
+    </>
   )
 }
 
-export default notes
+export default Notes
