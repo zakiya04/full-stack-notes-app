@@ -3,7 +3,11 @@ import { MdDelete } from "react-icons/md";
 import { TbPinnedFilled } from "react-icons/tb";
 import { FaEllipsisH } from "react-icons/fa";
 
-const Note = () => {
+type NoteProps = {
+  deleteHandler: () => void;
+}
+
+const Note = ({deleteHandler}:NoteProps) => {
   const[open,setOpen] = useState<boolean>(false)
 
   return (
@@ -16,7 +20,7 @@ const Note = () => {
           <FaEllipsisH className="h-6 w-6 text-zinc-600"/>
           {open && (
             <div className="absolute bottom-full mb-2 flex flex-col gap-2 bg-white/30 backdrop-blur-md rounded-lg p-2">
-             <button className="bg-white rounded-full h-12 w-12 flex items-center justify-center"><MdDelete className="h-6 w-6 text-zinc-600"/></button>
+             <button className="bg-white rounded-full h-12 w-12 flex items-center justify-center" onClick={deleteHandler}><MdDelete className="h-6 w-6 text-zinc-600"/></button>
              <button className="bg-white rounded-full h-12 w-12 flex items-center justify-center"><TbPinnedFilled className="h-6 w-6 text-zinc-600"/></button>
             </div> 
           )}
